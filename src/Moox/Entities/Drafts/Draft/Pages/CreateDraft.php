@@ -2,7 +2,7 @@
 
 namespace Moox\Draft\Moox\Entities\Drafts\Draft\Pages;
 
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Override;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Entities\Items\Draft\Pages\BaseCreateDraft;
 
@@ -60,7 +60,7 @@ class CreateDraft extends BaseCreateDraft
         return $record;
     }
 
-    #[\Override]
+    #[Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index', ['lang' => $this->lang]);
