@@ -2,14 +2,6 @@
 
 namespace Moox\Draft\Moox\Entities\Drafts\Draft;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Moox\User\Models\User;
-use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ListDrafts;
-use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\CreateDraft;
-use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\EditDraft;
-use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ViewDraft;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\KeyValue;
@@ -19,6 +11,9 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -28,13 +23,18 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
+use Moox\Clipboard\Forms\Components\CopyableField;
 use Moox\Core\Entities\Items\Draft\BaseDraftResource;
-use Moox\Core\Forms\Components\CopyableField;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Draft\Models\Draft;
+use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\CreateDraft;
+use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\EditDraft;
+use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ListDrafts;
+use Moox\Draft\Moox\Entities\Drafts\Draft\Pages\ViewDraft;
 use Moox\Localization\Filament\Tables\Columns\TranslationColumn;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Slug\Forms\Components\TitleWithSlugInput;
+use Moox\User\Models\User;
 
 class DraftResource extends BaseDraftResource
 {
@@ -42,7 +42,7 @@ class DraftResource extends BaseDraftResource
 
     protected static ?string $model = Draft::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
@@ -74,54 +74,50 @@ class DraftResource extends BaseDraftResource
         $taxonomyFields = static::getTaxonomyFields();
 
         $schema = [
-            Grid::make(2)
+            Grid::make()
                 ->schema([
-                    Grid::make()
+                    Section::make()
                         ->schema([
-                            Section::make()
-                                ->schema([
-                                    MediaPicker::make('image')
-                                        ->label(__('core::core.image')),
-                                    TitleWithSlugInput::make(
-                                        fieldTitle: 'title',
-                                        fieldSlug: 'slug',
-                                        slugRuleUniqueParameters: [
-                                            'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
-                                                $locale = $livewire->lang;
-                                                if ($record) {
-                                                    $rule->where('locale', $locale);
-                                                    $existingTranslation = $record->translations()
-                                                        ->where('locale', $locale)
-                                                        ->first();
-                                                    if ($existingTranslation) {
-                                                        $rule->ignore($existingTranslation->id);
-                                                    }
-                                                } else {
-                                                    $rule->where('locale', $locale);
-                                                }
+                            MediaPicker::make('image')
+                                ->label(__('core::core.image')),
+                            // TitleWithSlugInput::make(
+                            //     fieldTitle: 'title',
+                            //     fieldSlug: 'slug',
+                            //     slugRuleUniqueParameters: [
+                            //         'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
+                            //             $locale = $livewire->lang;
+                            //             if ($record) {
+                            //                 $rule->where('locale', $locale);
+                            //                 $existingTranslation = $record->translations()
+                            //                     ->where('locale', $locale)
+                            //                     ->first();
+                            //                 if ($existingTranslation) {
+                            //                     $rule->ignore($existingTranslation->id);
+                            //                 }
+                            //             } else {
+                            //                 $rule->where('locale', $locale);
+                            //             }
 
-                                                return $rule;
-                                            },
-                                            'table' => 'draft_translations',
-                                            'column' => 'slug',
-                                        ]
-                                    ),
+                            //             return $rule;
+                            //         },
+                            //         'table' => 'draft_translations',
+                            //         'column' => 'slug',
+                            //     ]
+                            // ),
 
-                                    Toggle::make('is_active')
-                                        ->label('Active'),
-                                    RichEditor::make('description')
-                                        ->label('Description'),
-                                    MarkdownEditor::make('content')
-                                        ->label('Content'),
-                                    KeyValue::make('data')
-                                        ->label('Data (JSON)'),
-                                ]),
+                            Toggle::make('is_active')
+                                ->label('Active'),
+                            RichEditor::make('description')
+                                ->label('Description'),
+                            MarkdownEditor::make('content')
+                                ->label('Content'),
+                            KeyValue::make('data')
+                                ->label('Data (JSON)'),
                             Grid::make(2)
                                 ->schema([
                                     static::getFooterActions()->columnSpan(1),
                                 ]),
-                        ])
-                        ->columnSpan(['lg' => 2]),
+                        ])->columnSpan(2),
                     Grid::make()
                         ->schema([
                             Section::make()
@@ -202,9 +198,11 @@ class DraftResource extends BaseDraftResource
                                 ])
                                 ->hidden(fn ($record) => $record === null),
                         ])
-                        ->columnSpan(['lg' => 1]),
+                        ->columnSpan(1)
+                        ->columns(1),
                 ])
-                ->columns(['lg' => 3]),
+                ->columns(3)
+                ->columnSpanFull(),
         ];
 
         return $form
