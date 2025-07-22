@@ -78,32 +78,32 @@ class DraftResource extends BaseDraftResource
                 ->schema([
                     Section::make()
                         ->schema([
+                            TitleWithSlugInput::make(
+                                fieldTitle: 'title',
+                                fieldSlug: 'slug',
+                                slugRuleUniqueParameters: [
+                                    'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
+                                        $locale = $livewire->lang;
+                                        if ($record) {
+                                            $rule->where('locale', $locale);
+                                            $existingTranslation = $record->translations()
+                                                ->where('locale', $locale)
+                                                ->first();
+                                            if ($existingTranslation) {
+                                                $rule->ignore($existingTranslation->id);
+                                            }
+                                        } else {
+                                            $rule->where('locale', $locale);
+                                        }
+
+                                        return $rule;
+                                    },
+                                    'table' => 'draft_translations',
+                                    'column' => 'slug',
+                                ]
+                            ),
                             MediaPicker::make('image')
                                 ->label(__('core::core.image')),
-                            // TitleWithSlugInput::make(
-                            //     fieldTitle: 'title',
-                            //     fieldSlug: 'slug',
-                            //     slugRuleUniqueParameters: [
-                            //         'modifyRuleUsing' => function (Unique $rule, $record, $livewire) {
-                            //             $locale = $livewire->lang;
-                            //             if ($record) {
-                            //                 $rule->where('locale', $locale);
-                            //                 $existingTranslation = $record->translations()
-                            //                     ->where('locale', $locale)
-                            //                     ->first();
-                            //                 if ($existingTranslation) {
-                            //                     $rule->ignore($existingTranslation->id);
-                            //                 }
-                            //             } else {
-                            //                 $rule->where('locale', $locale);
-                            //             }
-
-                            //             return $rule;
-                            //         },
-                            //         'table' => 'draft_translations',
-                            //         'column' => 'slug',
-                            //     ]
-                            // ),
 
                             Toggle::make('is_active')
                                 ->label('Active'),
