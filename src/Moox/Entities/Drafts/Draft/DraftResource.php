@@ -200,6 +200,7 @@ class DraftResource extends BaseDraftResource
                     ->label(__('core::core.type'))
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
                 ...static::getTaxonomyFilters(),
+                static::getLocaleFilter(),
             ])->deferFilters(false)
             ->persistFiltersInSession();
     }

@@ -18,7 +18,11 @@
         }
     ],
     "require": {
-        "moox/core": "4.0.0"
+        "moox/core": "5.0.0",
+        "moox/localization": "5.0.0",
+        "moox/media": "5.0.0",
+        "moox/category": "5.0.0",
+        "moox/tag": "5.0.0"
     },
     "autoload": {
         "psr-4": {
@@ -26,16 +30,53 @@
             "Moox\\Draft\\Database\\Factories\\": "database/factories"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Draft\\Tests\\": "tests"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
                 "Moox\\Draft\\DraftServiceProvider"
             ]
+        },
+        "moox": {
+            "name": "Moox Draft",
+            "stability": "stable",
+            "type": "moox-plugin",
+            "install": {
+                "auto_migrate": "database/migrations",
+                "seed": "database/seeders/DraftSeeder.php",
+                "auto_publish": "moox-draft-config",
+                "auto_entities": {
+                    "Draft": true
+                },
+                "auto_class": {
+                    "Draft": "Moox\\Draft\\Draft"
+                },
+                "auto_run": {
+                    "Run this": "php artisan run:this",
+                    "Build the frontend": "npm run build",
+                    "Clear the cache": "php artisan cache:clear"
+                },
+                "auto_runhere": {
+                    "Build the frontend": "npm run build"
+                }
+            },
+            "update": {
+                "migrate": "database/migrations",
+                "merge": "moox-draft-config"
+            },
+            "uninstall": {
+                "migrate": "database/migrations",
+                "remove": "moox-draft-config"
+            }
         }
     },
     "prefer-stable": true,
     "require-dev": {
-        "moox/devtools": "self.version"
+        "moox/devtools": "^4.0"
     },
     "config": {
         "allow-plugins": {
