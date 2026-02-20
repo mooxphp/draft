@@ -18,11 +18,11 @@
         }
     ],
     "require": {
-        "moox/core": "5.0.0",
-        "moox/localization": "5.0.0",
-        "moox/media": "5.0.0",
-        "moox/category": "5.0.0",
-        "moox/tag": "5.0.0"
+        "moox/core": "5.0.1",
+        "moox/localization": "5.0.1",
+        "moox/media": "5.0.1",
+        "moox/category": "5.0.1",
+        "moox/tag": "5.0.1"
     },
     "autoload": {
         "psr-4": {
